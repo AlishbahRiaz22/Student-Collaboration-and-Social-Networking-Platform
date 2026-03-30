@@ -1,0 +1,87 @@
+/* client/src/components/Navbar.css */
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  height: var(--navbar-height);
+  background: rgba(247, 243, 238, 0.92);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.navbar__inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  height: 100%;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.navbar__logo {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--color-coral);
+  flex-shrink: 0;
+}
+
+.navbar__nav {
+  display: flex;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.navbar__link {
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-ink-mid);
+  transition: color 0.15s, background 0.15s;
+}
+
+.navbar__link:hover {
+  color: var(--color-ink-dark);
+  background: rgba(216, 90, 48, 0.08);
+}
+
+.navbar__link--active {
+  color: var(--color-coral);
+}
+
+.navbar__auth {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.navbar__auth-link {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-ink-mid);
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--radius-full);
+  transition: color 0.15s;
+}
+
+.navbar__auth-link:hover {
+  color: var(--color-coral);
+}
+
+.navbar__auth-link--cta {
+  background: var(--color-coral);
+  color: #fff;
+  padding: 0.4rem 1rem;
+}
+
+.navbar__auth-link--cta:hover {
+  background: var(--color-coral-hover);
+  color: #fff;
+}
