@@ -23,16 +23,14 @@ const Register = () => {
     if (password.length < 6) return setError('Password must be at least 6 characters')
 
     try {
-      setLoading(true)
-      const data = await registerUser(name, email, password)
-      login(data.user, data.token)
-      localStorage.setItem('token', data.token)
-      navigate('/')
-    } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed. Try again.')
-    } finally {
-      setLoading(false)
-    }
+  setLoading(true)
+  await registerUser(name, email, password)
+  navigate('/login')
+} catch (err) {
+  setError(err.response?.data?.error || 'Registration failed. Try again.')
+} finally {
+  setLoading(false)
+}
   }
 
   return (

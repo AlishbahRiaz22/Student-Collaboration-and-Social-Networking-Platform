@@ -23,8 +23,7 @@ const Login = () => {
     try {
   setLoading(true)
   const data = await loginUser(email, password)
-  localStorage.setItem('token', data.token)
-  login({ token: data.token }, data.token)
+  login({}, data.token)
   window.location.href = '/'
 } catch (err) {
   setError(err.response?.data?.error || 'Login failed. Check your credentials.')
