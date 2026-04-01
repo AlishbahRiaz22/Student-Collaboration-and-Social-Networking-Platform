@@ -13,7 +13,7 @@ app.use(cors());
 app.use(express.json());
 
 // ── Routes ──────────────────────────────────────────────
-app.use('/api/auth.js', require('./routes/auth'));
+app.use('/api/auth', require('./routes/auth'));
 const userRoutes = require('./routes/users')
 app.use('/api/users', userRoutes)
 // app.use('/api/users', require('./routes/users'));
