@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 
@@ -21,17 +20,3 @@ userSchema.pre('save', async function(next) {
 });
 
 module.exports = mongoose.model('User', userSchema);
-=======
-const mongoose = require("mongoose");
-
-const userSchema = new mongoose.Schema({
-  name: String,
-  email: { type: String, unique: true },
-  password: String,
-  bio: { type: String, default: "" },
-  followers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  following: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }]
-}, { timestamps: true });
-
-module.exports = mongoose.model("User", userSchema);
->>>>>>> 2a8a7b3157ed43884d5669e8bc8fccd16f5e82ea

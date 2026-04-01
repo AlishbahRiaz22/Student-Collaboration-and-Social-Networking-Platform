@@ -6,6 +6,7 @@ const User = require("../models/User");
 
 // REGISTER
 router.post("/register", async (req, res) => {
+    console.log("REGISTER ROUTE HIT");
   try {
     const { name, email, password } = req.body;
 
@@ -53,5 +54,5 @@ router.post("/login", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
+console.log("AUTH ROUTES LOADED");
 module.exports = router;
