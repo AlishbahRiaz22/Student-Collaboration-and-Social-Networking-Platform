@@ -21,12 +21,12 @@ const Login = () => {
     if (!password) return setError('Password is required')
 
     try {
-  setLoading(true)
-  const data = await loginUser(email, password)
-  localStorage.setItem('token', data.token)
-  login({ token: data.token }, data.token)
-  window.location.href = '/'
-} catch (err) {
+      setLoading(true)
+      const data = await loginUser(email, password)
+      login({ token: data.token }, data.token)
+      localStorage.setItem('token', data.token)
+      navigate('/feed', { replace: true })
+    } catch (err) {
   setError(err.response?.data?.error || 'Login failed. Check your credentials.')
 } finally {
   setLoading(false)

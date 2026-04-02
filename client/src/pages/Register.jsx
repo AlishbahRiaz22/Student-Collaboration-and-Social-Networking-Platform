@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { registerUser } from '../api/auth'
-import { useAuth } from '../context/AuthContext'
 
 const Register = () => {
   const [name, setName] = useState('')
@@ -11,7 +10,6 @@ const Register = () => {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const { login } = useAuth()
   const navigate = useNavigate()
 
   const handleSubmit = async (e) => {
@@ -26,10 +24,8 @@ const Register = () => {
 
     try {
       setLoading(true)
-      const data = await registerUser(name, username, email, password)
-      login(data.user, data.token)
-      localStorage.setItem('token', data.token)
-      navigate('/')
+      await registerUser(name, username, email, password)
+      navigate('/login', { replace: true })
     } catch (err) {
       setError(err.response?.data?.error || 'Registration failed. Try again.')
     } finally {
