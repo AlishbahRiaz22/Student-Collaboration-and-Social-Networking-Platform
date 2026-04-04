@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import api from '../api/index'
+import FollowButton from '../components/FollowButton'
 
 const Profile = () => {
   const { id, username } = useParams()
@@ -179,10 +180,12 @@ const Profile = () => {
             <p style={{ marginBottom: '0.75rem' }}>
               <Link to="/login">Login</Link> to follow this user.
             </p>
-          ) : (
-            <button onClick={handleFollowToggle} disabled={followLoading} style={{ width: '100%', padding: '0.75rem', marginBottom: '0.5rem' }}>
-              {followLoading ? 'Updating...' : isFollowing ? 'Unfollow' : 'Follow'}
-            </button>
+         ) : (
+            <FollowButton
+              isFollowing={isFollowing}
+              followLoading={followLoading}
+              onToggle={handleFollowToggle}
+            />
           )}
           <button onClick={fetchProfile} style={{ width: '100%', padding: '0.75rem' }}>
             Refresh
