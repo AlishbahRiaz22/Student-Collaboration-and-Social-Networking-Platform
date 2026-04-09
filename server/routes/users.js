@@ -1,10 +1,41 @@
 const express = require('express')
 const router = express.Router()
 const mongoose = require('mongoose')
+const multer = require('multer')
+const cloudinary = require('../config/cloudinary')
 const User = require('../models/User')
 const auth = require('../middleware/auth')
 
 const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id)
+
+const avatarUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 2 * 1024 * 1024
+  },
+  fileFilter: (req, file, cb) => {
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Only image files are allowed'))
+    }
+
+    cb(null, true)
+  }
+})
+
+const uploadAvatarToCloudinary = (file) => {
+  const dataUri = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`
+
+  return cloudinary.uploader.upload(dataUri, {
+    folder: 'studentnet/avatars',
+    resource_type: 'image',
+    width: 512,
+    height: 512,
+    crop: 'fill',
+    gravity: 'face',
+    quality: 'auto',
+    fetch_format: 'auto'
+  })
+}
 
 // GET /api/users/suggestions — suggested users to follow (protected)
 router.get('/suggestions', auth, async (req, res) => {
@@ -17,13 +48,14 @@ router.get('/suggestions', auth, async (req, res) => {
     const excludedIds = [req.user.userId, ...(currentUser.following || [])]
 
     const suggestions = await User.find({ _id: { $nin: excludedIds } })
-      .select('name username followers following')
+      .select('name username followers following avatar')
       .limit(6)
 
     const data = suggestions.map((u) => ({
       _id: u._id,
       name: u.name,
       username: u.username,
+      avatar: u.avatar,
       isFollowing: currentUser.following.some((id) => id.toString() === u._id.toString())
     }))
 
@@ -44,6 +76,75 @@ router.get('/:identifier', async (req, res) => {
 
     if (!user) return res.status(404).json({ error: 'User not found' })
     res.json(user)
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' })
+  }
+})
+
+// PUT /api/users/:id/avatar — upload/change profile picture (protected)
+router.put('/:id/avatar', auth, (req, res) => {
+  try {
+    if (!isValidObjectId(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid user id' })
+    }
+
+    if (req.user.userId !== req.params.id) {
+      return res.status(403).json({ error: 'You can only edit your own profile' })
+    }
+
+    avatarUpload.single('avatar')(req, res, async (err) => {
+      try {
+        if (err) {
+          const message = err.message === 'File too large'
+            ? 'Avatar image must be 2MB or smaller'
+            : err.message
+          return res.status(400).json({ error: message })
+        }
+
+        if (!req.file) {
+          return res.status(400).json({ error: 'Avatar image is required' })
+        }
+
+        const currentUser = await User.findById(req.params.id)
+        if (!currentUser) {
+          return res.status(404).json({ error: 'User not found' })
+        }
+
+        let uploadResult
+        try {
+          uploadResult = await uploadAvatarToCloudinary(req.file)
+        } catch (uploadErr) {
+          return res.status(500).json({ error: uploadErr.message })
+        }
+
+        try {
+          const updatedUser = await User.findByIdAndUpdate(
+            req.params.id,
+            {
+              avatar: uploadResult.secure_url,
+              avatarPublicId: uploadResult.public_id
+            },
+            { new: true }
+          ).select('-password')
+
+          if (!updatedUser) {
+            await cloudinary.uploader.destroy(uploadResult.public_id).catch(() => {})
+            return res.status(404).json({ error: 'User not found' })
+          }
+
+          if (currentUser.avatarPublicId && currentUser.avatarPublicId !== uploadResult.public_id) {
+            await cloudinary.uploader.destroy(currentUser.avatarPublicId).catch(() => {})
+          }
+
+          res.json(updatedUser)
+        } catch (updateErr) {
+          await cloudinary.uploader.destroy(uploadResult.public_id).catch(() => {})
+          res.status(500).json({ error: 'Server error' })
+        }
+      } catch (handlerErr) {
+        res.status(500).json({ error: 'Server error' })
+      }
+    })
   } catch (err) {
     res.status(500).json({ error: 'Server error' })
   }

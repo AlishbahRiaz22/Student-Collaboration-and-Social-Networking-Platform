@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import api from '../api/index'
 import FollowButton from '../components/FollowButton'
+import Avatar from '../components/Avatar'
 import PostCard from '../components/PostCard'
 import './Feed.css'
 import './Profile.css'
@@ -21,6 +22,8 @@ const Profile = () => {
   const [editing, setEditing] = useState(false)
   const [bio, setBio] = useState('')
   const [name, setName] = useState('')
+  const [avatarFile, setAvatarFile] = useState(null)
+  const [avatarPreview, setAvatarPreview] = useState('')
   const [saving, setSaving] = useState(false)
   const [followLoading, setFollowLoading] = useState(false)
 
@@ -97,15 +100,56 @@ const Profile = () => {
   const handleEditStart = () => {
     setName(profile?.name || '')
     setBio(profile?.bio || '')
+    setAvatarFile(null)
+    setAvatarPreview(profile?.avatar || '')
     setEditing(true)
   }
 
   const handleEditCancel = () => {
     setName(profile?.name || '')
     setBio(profile?.bio || '')
+    setAvatarFile(null)
+    setAvatarPreview(profile?.avatar || '')
     setEditing(false)
     setError('')
   }
+
+  const handleAvatarChange = (event) => {
+    const file = event.target.files?.[0] || null
+    setAvatarFile(file)
+
+    if (!file) {
+      setAvatarPreview(profile?.avatar || '')
+      return
+    }
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please choose an image file')
+      event.target.value = ''
+      setAvatarFile(null)
+      setAvatarPreview(profile?.avatar || '')
+      return
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      setError('Avatar image must be 2MB or smaller')
+      event.target.value = ''
+      setAvatarFile(null)
+      setAvatarPreview(profile?.avatar || '')
+      return
+    }
+
+    setError('')
+    setAvatarPreview(URL.createObjectURL(file))
+  }
+
+  useEffect(() => {
+    return () => {
+      if (avatarPreview?.startsWith('blob:')) {
+        URL.revokeObjectURL(avatarPreview)
+      }
+    }
+  }, [avatarPreview])
 
   const handleSave = async () => {
     if (!name.trim()) {
@@ -117,8 +161,22 @@ const Profile = () => {
       setSaving(true)
       setError('')
       setMessage('')
-      const res = await api.put(`/users/${targetUserId}`, { name: name.trim(), bio })
-      setProfile(res.data)
+
+      const profileRes = await api.put(`/users/${targetUserId}`, { name: name.trim(), bio })
+      let nextProfile = profileRes.data
+
+      if (avatarFile) {
+        const formData = new FormData()
+        formData.append('avatar', avatarFile)
+
+        const avatarRes = await api.put(`/users/${targetUserId}/avatar`, formData)
+
+        nextProfile = avatarRes.data
+      }
+
+      setProfile(nextProfile)
+      setAvatarFile(null)
+      setAvatarPreview(nextProfile.avatar || '')
       setEditing(false)
       setMessage('Profile updated successfully')
     } catch (err) {
@@ -224,6 +282,31 @@ const Profile = () => {
               <h2 className="profile-title">Profile</h2>
               {error && <p className="profile-error">{error}</p>}
               {message && <p className="profile-success">{message}</p>}
+
+              <div className="profile-avatar-block">
+                <Avatar
+                  src={editing ? avatarPreview : profile.avatar}
+                  name={profile.name || profile.username}
+                  size={88}
+                  className="profile-avatar"
+                />
+
+                {isOwnProfile && editing && (
+                  <div className="profile-avatar-controls">
+                    <label className="profile-avatar-label" htmlFor="profile-avatar-input">
+                      Change profile picture
+                    </label>
+                    <input
+                      id="profile-avatar-input"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="profile-avatar-input"
+                    />
+                    <p className="profile-avatar-hint">PNG, JPG, GIF or WEBP. Max size: 2MB.</p>
+                  </div>
+                )}
+              </div>
 
               <div className="profile-meta">
                 <div className="profile-meta-item"><strong>Username:</strong> {profile.username}</div>

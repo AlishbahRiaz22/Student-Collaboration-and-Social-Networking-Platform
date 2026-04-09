@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/useAuth'
 import CreatePostForm from '../components/CreatePostForm'
+import Avatar from '../components/Avatar'
 import PostCard from '../components/PostCard'
 import api from '../api/index'
 import './Feed.css'
@@ -157,6 +158,12 @@ const Feed = () => {
                 {suggestedUsers.map((person) => (
                   <div key={person._id} className="suggestion-tile" role="listitem">
                     <div className="suggestion-info">
+                      <Avatar
+                        src={person.avatar}
+                        name={person.name || person.username}
+                        size={40}
+                        className="suggestion-avatar"
+                      />
                       <div className="suggestion-name">{person.name || 'Student'}</div>
                       <div className="suggestion-username">@{person.username}</div>
                     </div>

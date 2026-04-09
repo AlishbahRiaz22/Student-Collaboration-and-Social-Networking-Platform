@@ -1,14 +1,21 @@
+import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import api from '../api/index'
-import { likePost } from '../api/posts'
-import CommentSection from './CommentSection'
+import { getPostLikes, likePost } from '../api/posts'
+import Avatar from './Avatar'
+import PostLikesModal from './PostLikesModal'
 
 const PostCard = ({ post, currentUserId, onDelete, onUpdate }) => {
+  const navigate = useNavigate()
   const [editing, setEditing] = useState(false)
   const [editContent, setEditContent] = useState(post.content)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
-  const [comments, setComments] = useState(post.comments || [])
+  const [likesOpen, setLikesOpen] = useState(false)
+  const [likers, setLikers] = useState([])
+  const [likersLoading, setLikersLoading] = useState(false)
+  const [likersError, setLikersError] = useState('')
 
   // like state — start from what the database already has
   const [likesCount, setLikesCount] = useState(post.likes?.length || 0)
@@ -17,6 +24,32 @@ const PostCard = ({ post, currentUserId, onDelete, onUpdate }) => {
   )
 
   const isMyPost = post.userId?._id === currentUserId || post.userId === currentUserId
+
+  const openPost = () => {
+    navigate(`/post/${post._id}`)
+  }
+
+  const stopCardNavigation = (event) => {
+    event.stopPropagation()
+  }
+
+  const handleOpenLikes = async (event) => {
+    event.stopPropagation()
+    setLikesOpen(true)
+
+    if (likers.length > 0 || likersLoading) return
+
+    try {
+      setLikersLoading(true)
+      setLikersError('')
+      const data = await getPostLikes(post._id)
+      setLikers(data)
+    } catch (err) {
+      setLikersError(err.response?.data?.error || 'Failed to load likes')
+    } finally {
+      setLikersLoading(false)
+    }
+  }
 
   const handleDelete = async () => {
     if (!window.confirm('Delete this post?')) return
@@ -71,13 +104,38 @@ const PostCard = ({ post, currentUserId, onDelete, onUpdate }) => {
   }
 
   return (
-    <div className="post-card">
+    <div
+      className="post-card post-card-clickable"
+      onClick={openPost}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          openPost()
+        }
+      }}
+    >
 
       {/* Author and date */}
       <div className="post-header">
-        <strong className="post-author">
-          {post.userId?.name || post.userId?.username || 'Unknown'}
-        </strong>
+        <div className="post-author-wrap" onClick={stopCardNavigation}>
+          <Avatar
+            src={post.userId?.avatar}
+            name={post.userId?.name || post.userId?.username}
+            size={34}
+            className="post-avatar"
+          />
+          <strong className="post-author">
+            {post.userId?._id ? (
+              <Link to={`/profile/${post.userId._id}`} className="profile-link-inline">
+                {post.userId?.name || post.userId?.username || 'Unknown'}
+              </Link>
+            ) : (
+              post.userId?.name || post.userId?.username || 'Unknown'
+            )}
+          </strong>
+        </div>
         <span className="post-date">
           {new Date(post.createdAt).toLocaleDateString()}
         </span>
@@ -90,9 +148,10 @@ const PostCard = ({ post, currentUserId, onDelete, onUpdate }) => {
           onChange={(e) => setEditContent(e.target.value)}
           rows={3}
           className="post-edit-textarea"
+          onClick={stopCardNavigation}
         />
       ) : (
-        <>
+        <div className="post-body-link">
           {post.graphic && (
             <div className="post-graphic-wrap">
               <img
@@ -104,32 +163,35 @@ const PostCard = ({ post, currentUserId, onDelete, onUpdate }) => {
             </div>
           )}
           <p className="post-content">{post.content}</p>
-        </>
+        </div>
       )}
-
       {error && <p className="post-error">{error}</p>}
-
-      <CommentSection
-        postId={post._id}
-        currentUserId={currentUserId}
-        comments={comments}
-        onCommentAdded={setComments}
-      />
 
       {/* Bottom row */}
       <div className="post-footer">
 
         {/* Like button */}
-        <button
-          onClick={handleLike}
-          className={`like-btn ${isLiked ? 'liked' : ''}`}
-        >
-          {isLiked ? '♥' : '♡'} {likesCount}
-        </button>
+        <div className="post-social-bar" onClick={stopCardNavigation}>
+          <button
+            type="button"
+            onClick={handleLike}
+            className={`like-btn ${isLiked ? 'liked' : ''}`}
+          >
+            {isLiked ? '♥' : '♡'} {likesCount}
+          </button>
+          <button
+            type="button"
+            onClick={handleOpenLikes}
+            className="post-like-count-btn"
+          >
+            👥 {likesCount}
+          </button>
+          <span className="post-comment-count">💬 {post.comments?.length || 0}</span>
+        </div>
 
         {/* Edit / Delete — only on your own posts */}
         {isMyPost && (
-          <div className="post-actions">
+          <div className="post-actions" onClick={stopCardNavigation}>
             {editing ? (
               <>
                 <button onClick={handleEdit} disabled={loading} className="btn-save">
@@ -156,6 +218,14 @@ const PostCard = ({ post, currentUserId, onDelete, onUpdate }) => {
           </div>
         )}
       </div>
+
+      <PostLikesModal
+        open={likesOpen}
+        loading={likersLoading}
+        error={likersError}
+        users={likers}
+        onClose={() => setLikesOpen(false)}
+      />
     </div>
   )
 }

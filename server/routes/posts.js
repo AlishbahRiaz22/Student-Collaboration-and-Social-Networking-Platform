@@ -23,8 +23,12 @@ const uploadToCloudinary = (file) => {
 }
 
 const postPopulateOptions = [
-  { path: 'userId', select: 'name username' },
-  { path: 'comments.userId', select: 'name username' }
+  { path: 'userId', select: 'name username avatar' },
+  { path: 'comments.userId', select: 'name username avatar' }
+]
+
+const likePopulateOptions = [
+  { path: 'likes', select: 'name username avatar' }
 ]
 
 const maybeUploadImage = (req, res, next) => {
@@ -77,6 +81,38 @@ router.get('/user/:userId', async (req, res) => {
       .populate(postPopulateOptions)
 
     res.json(posts)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// GET /api/posts/:id — get a single post with comments
+router.get('/:id', async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid post id' })
+    }
+
+    const post = await Post.findById(req.params.id).populate(postPopulateOptions)
+    if (!post) return res.status(404).json({ error: 'Post not found' })
+
+    res.json(post)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+// GET /api/posts/:id/likes — get users who liked a post
+router.get('/:id/likes', async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid post id' })
+    }
+
+    const post = await Post.findById(req.params.id).populate(likePopulateOptions)
+    if (!post) return res.status(404).json({ error: 'Post not found' })
+
+    res.json(post.likes || [])
   } catch (err) {
     res.status(500).json({ error: err.message })
   }

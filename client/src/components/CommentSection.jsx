@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import api from '../api/index'
+import Avatar from './Avatar'
 
 const CommentSection = ({ postId, currentUserId, comments = [], onCommentAdded }) => {
   const [commentText, setCommentText] = useState('')
@@ -30,10 +32,24 @@ const CommentSection = ({ postId, currentUserId, comments = [], onCommentAdded }
         <div className="post-comments">
           {comments.map((comment) => (
             <div key={comment._id} className="post-comment">
-              <div className="post-comment-author">
-                {comment.userId?.name || comment.userId?.username || 'Unknown'}
+              <Avatar
+                src={comment.userId?.avatar}
+                name={comment.userId?.name || comment.userId?.username}
+                size={28}
+                className="post-comment-avatar"
+              />
+              <div className="post-comment-body">
+                <div className="post-comment-author">
+                  {comment.userId?._id ? (
+                    <Link to={`/profile/${comment.userId._id}`} className="profile-link-inline">
+                      {comment.userId?.name || comment.userId?.username || 'Unknown'}
+                    </Link>
+                  ) : (
+                    comment.userId?.name || comment.userId?.username || 'Unknown'
+                  )}
+                </div>
+                <div className="post-comment-text">{comment.content}</div>
               </div>
-              <div className="post-comment-text">{comment.content}</div>
             </div>
           ))}
         </div>
