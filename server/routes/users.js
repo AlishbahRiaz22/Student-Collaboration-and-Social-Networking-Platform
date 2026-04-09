@@ -14,7 +14,9 @@ router.get('/suggestions', auth, async (req, res) => {
       return res.status(404).json({ error: 'Current user not found' })
     }
 
-    const suggestions = await User.find({ _id: { $ne: req.user.userId } })
+    const excludedIds = [req.user.userId, ...(currentUser.following || [])]
+
+    const suggestions = await User.find({ _id: { $nin: excludedIds } })
       .select('name username followers following')
       .limit(6)
 

@@ -55,7 +55,7 @@ const Feed = () => {
     try {
       setSuggestionsLoading(true)
       const res = await api.get('/users/suggestions')
-      setSuggestedUsers(res.data)
+      setSuggestedUsers(res.data.filter((person) => person._id !== currentUserId && !person.isFollowing))
     } catch {
       setSuggestedUsers([])
     } finally {
@@ -68,16 +68,19 @@ const Feed = () => {
   }, [fetchSuggestions])
 
   const handleFollowSuggestion = async (userId) => {
+    const previousUsers = suggestedUsers
+
+    setSuggestedUsers((prev) => prev.map((u) => (
+      u._id === userId ? { ...u, isFollowing: true } : u
+    )))
+
     try {
       await api.put(`/users/${userId}/follow`)
-      setSuggestedUsers((prev) => prev.map((u) => (
-        u._id === userId ? { ...u, isFollowing: true } : u
-      )))
       if (feedMode === 'smart') {
         fetchPosts()
       }
     } catch {
-      // ignore and keep current state
+      setSuggestedUsers(previousUsers)
     }
   }
 
@@ -98,6 +101,7 @@ const Feed = () => {
       <nav className="feed-nav">
         <div className="feed-nav-left">
           <span className="feed-logo">StudentNet</span>
+          <Link to="/create-post" className="nav-link">Create Post</Link>
           <Link to="/explore" className="nav-link">Explore</Link>
         </div>
         <div className="feed-nav-right">

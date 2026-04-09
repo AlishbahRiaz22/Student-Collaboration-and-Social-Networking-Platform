@@ -39,7 +39,7 @@ const Profile = () => {
   const isLoggedIn = Boolean(token)
   const currentUserId = getUserIdFromToken(token)
   const isOwnProfile = currentUserId && profile?._id === currentUserId
-  const isFollowing = profile?.followers?.includes(currentUserId)
+  const isFollowing = profile?.followers?.some((id) => id?.toString() === currentUserId)
   const targetUserId = profile?._id || id
 
   const handleProfileClick = () => {
@@ -129,6 +129,31 @@ const Profile = () => {
   }
 
   const handleFollowToggle = async () => {
+    if (!profile || followLoading) return
+
+    const previousProfile = profile
+    const nextFollowing = !isFollowing
+
+    setProfile((prev) => {
+      if (!prev) return prev
+
+      const followers = prev.followers || []
+      const normalizedFollowers = followers.map((id) => id.toString())
+
+      if (nextFollowing) {
+        if (normalizedFollowers.includes(currentUserId)) return prev
+        return {
+          ...prev,
+          followers: [...followers, currentUserId]
+        }
+      }
+
+      return {
+        ...prev,
+        followers: followers.filter((id) => id.toString() !== currentUserId)
+      }
+    })
+
     try {
       setFollowLoading(true)
       setError('')
@@ -137,9 +162,9 @@ const Profile = () => {
       const successText = isFollowing ? 'Unfollowed successfully' : 'Followed successfully'
 
       await api.put(`/users/${targetUserId}/${endpoint}`)
-      await fetchProfile()
       setMessage(successText)
     } catch (err) {
+      setProfile(previousProfile)
       setError(err.response?.data?.error || 'Failed to update follow status')
     } finally {
       setFollowLoading(false)
@@ -176,6 +201,7 @@ const Profile = () => {
       <nav className="feed-nav">
         <div className="feed-nav-left">
           <span className="feed-logo">StudentNet</span>
+          <Link to="/create-post" className="nav-link">Create Post</Link>
           <Link to="/feed" className="nav-link">Feed</Link>
           <Link to="/explore" className="nav-link">Explore</Link>
         </div>

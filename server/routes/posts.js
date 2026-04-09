@@ -3,6 +3,32 @@ const router = express.Router()
 const mongoose = require('mongoose')
 const Post = require('../models/Post')
 const auth = require('../middleware/auth')
+const multer = require('multer')
+const cloudinary = require('../config/cloudinary')
+
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024
+  }
+})
+
+const uploadToCloudinary = (file) => {
+  const dataUri = `data:${file.mimetype};base64,${file.buffer.toString('base64')}`
+
+  return cloudinary.uploader.upload(dataUri, {
+    folder: 'studentnet/posts',
+    resource_type: 'image'
+  })
+}
+
+const maybeUploadImage = (req, res, next) => {
+  if (req.is('multipart/form-data')) {
+    return upload.single('image')(req, res, next)
+  }
+
+  return next()
+}
 
 // GET /api/posts — get all posts, newest first
 router.get('/', async (req, res) => {
@@ -54,15 +80,26 @@ router.get('/user/:userId', async (req, res) => {
 })
 
 // POST /api/posts — create a new post
-router.post('/', auth, async (req, res) => {
+router.post('/', auth, maybeUploadImage, async (req, res) => {
   try {
-    const { content } = req.body
+    const body = req.body || {}
+    const { content, graphic } = body
     if (!content?.trim())
       return res.status(400).json({ error: 'Content is required' })
 
+    let graphicUrl = null
+
+    if (req.file) {
+      const uploadResult = await uploadToCloudinary(req.file)
+      graphicUrl = uploadResult.secure_url
+    } else if (typeof graphic === 'string' && graphic.trim()) {
+      graphicUrl = graphic.trim()
+    }
+
     const post = new Post({
       userId: req.user.userId,
-      content: content.trim()
+      content: content.trim(),
+      graphic: graphicUrl
     })
 
     await post.save()
@@ -124,15 +161,20 @@ router.put('/:id/like', auth, async (req, res) => {
     if (!post) return res.status(404).json({ error: 'Post not found' })
 
     const userId = req.user.userId
-    const alreadyLiked = post.likes.includes(userId)
+    const alreadyLiked = post.likes.some(id => id.toString() === userId)
 
     if (alreadyLiked) {
       await post.updateOne({ $pull: { likes: userId } })
-      res.json({ message: 'Post unliked', liked: false, likes: post.likes.length - 1 })
     } else {
-      await post.updateOne({ $push: { likes: userId } })
-      res.json({ message: 'Post liked', liked: true, likes: post.likes.length + 1 })
+      await post.updateOne({ $addToSet: { likes: userId } })
     }
+
+    const updatedPost = await Post.findById(req.params.id).select('likes')
+    res.json({
+      message: alreadyLiked ? 'Post unliked' : 'Post liked',
+      liked: !alreadyLiked,
+      likes: updatedPost.likes.length
+    })
   } catch (err) {
     res.status(500).json({ error: err.message })
   }

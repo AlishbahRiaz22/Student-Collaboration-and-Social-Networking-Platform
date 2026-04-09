@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import api from '../api/index'
+import { likePost } from '../api/posts'
 
 const PostCard = ({ post, currentUserId, onDelete, onUpdate }) => {
   const [editing, setEditing] = useState(false)
@@ -8,8 +9,10 @@ const PostCard = ({ post, currentUserId, onDelete, onUpdate }) => {
   const [error, setError] = useState('')
 
   // like state — start from what the database already has
-  const [likes, setLikes] = useState(post.likes || [])
-  const isLiked = currentUserId && likes.includes(currentUserId)
+  const [likesCount, setLikesCount] = useState(post.likes?.length || 0)
+  const [isLiked, setIsLiked] = useState(
+    post.likes?.some(id => id?.toString() === currentUserId) || false
+  )
 
   const isMyPost = post.userId?._id === currentUserId || post.userId === currentUserId
 
@@ -43,15 +46,24 @@ const PostCard = ({ post, currentUserId, onDelete, onUpdate }) => {
 
   const handleLike = async () => {
     if (!currentUserId) return  // must be logged in
+
+    if (loading) return
+
+    const nextLiked = !isLiked
+    const nextLikesCount = nextLiked ? likesCount + 1 : Math.max(0, likesCount - 1)
+    const previousLiked = isLiked
+    const previousLikesCount = likesCount
+
+    setIsLiked(nextLiked)
+    setLikesCount(nextLikesCount)
+
     try {
-      await api.put(`/posts/${post._id}/like`)
-      // update likes array locally without re-fetching everything
-      setLikes(prev =>
-        isLiked
-          ? prev.filter(id => id !== currentUserId)  // remove your ID
-          : [...prev, currentUserId]                  // add your ID
-      )
+      const data = await likePost(post._id)
+      setLikesCount(data.likes)
+      setIsLiked(data.liked)
     } catch (err) {
+      setIsLiked(previousLiked)
+      setLikesCount(previousLikesCount)
       console.error('Like failed:', err)
     }
   }
@@ -78,7 +90,19 @@ const PostCard = ({ post, currentUserId, onDelete, onUpdate }) => {
           className="post-edit-textarea"
         />
       ) : (
-        <p className="post-content">{post.content}</p>
+        <>
+          {post.graphic && (
+            <div className="post-graphic-wrap">
+              <img
+                src={post.graphic}
+                alt="Attached to post"
+                className="post-graphic"
+                loading="lazy"
+              />
+            </div>
+          )}
+          <p className="post-content">{post.content}</p>
+        </>
       )}
 
       {error && <p className="post-error">{error}</p>}
@@ -91,7 +115,7 @@ const PostCard = ({ post, currentUserId, onDelete, onUpdate }) => {
           onClick={handleLike}
           className={`like-btn ${isLiked ? 'liked' : ''}`}
         >
-          {isLiked ? '♥' : '♡'} {likes.length}
+          {isLiked ? '♥' : '♡'} {likesCount}
         </button>
 
         {/* Edit / Delete — only on your own posts */}

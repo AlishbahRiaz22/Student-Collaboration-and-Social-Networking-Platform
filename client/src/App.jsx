@@ -7,6 +7,7 @@ import Register from './pages/Register'
 import Feed from './pages/Feed'
 import Profile from './pages/Profile'
 import Explore from './pages/Explore'
+import CreatePostPage from './pages/CreatePost'
 import NotFound from './pages/NotFound'
 import './index.css'
 
@@ -19,6 +20,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<Navigate to="/feed" replace />} />
           <Route path="/feed" element={<ProtectedRoute><Feed /></ProtectedRoute>} />
+          <Route path="/create-post" element={<ProtectedRoute><CreatePostPage /></ProtectedRoute>} />
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/u/:username" element={<Profile />} />
           <Route path="/explore" element={<Explore />} />
