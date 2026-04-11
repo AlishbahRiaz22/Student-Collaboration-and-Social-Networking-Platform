@@ -77,12 +77,11 @@ const Messages = () => {
       setSending(true)
       setError('')
 
-      const response = await api.post('/messages', {
-        conversationId: conversation._id,
-        content: content.trim()
-      })
+       await api.post('/messages', {
+      conversationId: conversation._id,
+      content: content.trim()
+    })
 
-      setMessages((prev) => [...prev, response.data])
       setContent('')
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to send message')

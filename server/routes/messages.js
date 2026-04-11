@@ -50,7 +50,9 @@ router.post('/', auth, async (req, res) => {
     if (io) {
       io.to(`conversation:${conversationId}`).emit('message:new', populatedMessage)
       conversation.participants.forEach((participantId) => {
+        if (participantId.toString() !== req.user.userId) {
         io.to(`user:${participantId.toString()}`).emit('message:received', populatedMessage)
+        }
       })
     }
 
