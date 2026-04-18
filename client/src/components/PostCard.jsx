@@ -24,6 +24,10 @@ const PostCard = ({ post, currentUserId, onDelete, onUpdate }) => {
   )
 
   const isMyPost = post.userId?._id === currentUserId || post.userId === currentUserId
+  const societyName = post.societyId?.name || ''
+  const societySlug = post.societyId?.slug || ''
+  const authorName = post.userId?.name || post.userId?.username || 'Unknown'
+  const hasSocietyContext = Boolean(societyName)
 
   const openPost = () => {
     navigate(`/post/${post._id}`)
@@ -121,20 +125,42 @@ const PostCard = ({ post, currentUserId, onDelete, onUpdate }) => {
       <div className="post-header">
         <div className="post-author-wrap" onClick={stopCardNavigation}>
           <Avatar
-            src={post.userId?.avatar}
-            name={post.userId?.name || post.userId?.username}
+            src={post.societyId?.picture || post.userId?.avatar}
+            name={societyName || authorName}
             size={34}
             className="post-avatar"
           />
-          <strong className="post-author">
-            {post.userId?._id ? (
-              <Link to={`/profile/${post.userId._id}`} className="profile-link-inline">
-                {post.userId?.name || post.userId?.username || 'Unknown'}
-              </Link>
+          <div className="post-author-copy">
+            {hasSocietyContext ? (
+              <strong className="post-author">
+                <Link to={`/societies/${societySlug || post.societyId?._id}`} className="profile-link-inline">
+                  {societyName}
+                </Link>
+              </strong>
             ) : (
-              post.userId?.name || post.userId?.username || 'Unknown'
+              <strong className="post-author">
+                {post.userId?._id ? (
+                  <Link to={`/profile/${post.userId._id}`} className="profile-link-inline">
+                    {authorName}
+                  </Link>
+                ) : (
+                  authorName
+                )}
+              </strong>
             )}
-          </strong>
+
+            {hasSocietyContext && (
+              <span className="post-author-subtitle">
+                by {post.userId?._id ? (
+                  <Link to={`/profile/${post.userId._id}`} className="profile-link-inline">
+                    {authorName}
+                  </Link>
+                ) : (
+                  authorName
+                )}
+              </span>
+            )}
+          </div>
         </div>
         <span className="post-date">
           {new Date(post.createdAt).toLocaleDateString()}

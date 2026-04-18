@@ -241,6 +241,7 @@ const Profile = () => {
           <div className="feed-nav-left">
             <span className="feed-logo">StudentNet</span>
             <Link to="/feed" className="nav-link">Feed</Link>
+            <Link to="/societies" className="nav-link">Societies</Link>
             <Link to="/explore" className="nav-link">Search</Link>
           </div>
           <div className="feed-nav-right">
@@ -266,8 +267,10 @@ const Profile = () => {
           <span className="feed-logo">StudentNet</span>
           <Link to="/create-post" className="nav-link">Create Post</Link>
           <Link to="/feed" className="nav-link">Feed</Link>
+          <Link to="/societies" className="nav-link">Societies</Link>
           <Link to="/explore" className="nav-link">Search</Link>
           <Link to="/messages" className="nav-link">Messages</Link>
+          <Link to="/settings" className="nav-link">Settings</Link>
         </div>
         <div className="feed-nav-right">
           <button onClick={handleProfileClick} disabled={!currentUserId} className="nav-btn">

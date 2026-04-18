@@ -66,6 +66,10 @@
   cursor: pointer;
   font-size: 0.9rem;
   color: #333;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .nav-btn:hover {
@@ -320,6 +324,12 @@
   min-width: 0;
 }
 
+.post-author-copy {
+  display: grid;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
 .post-avatar {
   border: 2px solid #edf2f7;
 }
@@ -330,6 +340,12 @@
   min-width: 0;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+.post-author-subtitle {
+  font-size: 0.78rem;
+  color: #6b7280;
+  line-height: 1.2;
 }
 
 .post-date {
@@ -395,6 +411,31 @@
 
 .post-body-link:hover .post-content {
   color: #111;
+}
+
+.post-detail-author-copy {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.post-detail-author-subtitle {
+  display: block;
+  font-size: 0.8rem;
+  color: #6b7280;
+  line-height: 1.2;
+}
+
+.society-post-author-wrap {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.society-post-author-subtitle {
+  display: block;
+  color: #6b7280;
+  font-size: 0.78rem;
+  line-height: 1.2;
 }
 
 .post-social-bar {

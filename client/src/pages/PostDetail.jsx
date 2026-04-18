@@ -35,6 +35,11 @@ const PostDetail = () => {
     }
   }, [user])
 
+  const societyName = post?.societyId?.name || ''
+  const societySlug = post?.societyId?.slug || ''
+  const authorName = post?.userId?.name || post?.userId?.username || 'Unknown'
+  const hasSocietyContext = Boolean(societyName)
+
   const fetchPost = useCallback(async () => {
     try {
       setLoading(true)
@@ -108,8 +113,10 @@ const PostDetail = () => {
         <div className="feed-nav-left">
           <span className="feed-logo">StudentNet</span>
           <Link to="/feed" className="nav-link">Feed</Link>
+          <Link to="/societies" className="nav-link">Societies</Link>
           <Link to="/create-post" className="nav-link">Create Post</Link>
           <Link to="/messages" className="nav-link">Messages</Link>
+          <Link to="/settings" className="nav-link">Settings</Link>
         </div>
         <div className="feed-nav-right">
           <button onClick={handleLogout} className="nav-btn nav-btn-logout">
@@ -134,18 +141,35 @@ const PostDetail = () => {
                 <strong>Author:</strong>{' '}
                 <span className="post-detail-author-wrap">
                   <Avatar
-                    src={post.userId?.avatar}
-                    name={post.userId?.name || post.userId?.username}
+                    src={post.societyId?.picture || post.userId?.avatar}
+                    name={societyName || authorName}
                     size={30}
                     className="post-detail-avatar"
                   />
-                  {post.userId?._id ? (
-                    <Link to={`/profile/${post.userId._id}`} className="profile-link-inline">
-                      {post.userId?.name || post.userId?.username || 'Unknown'}
-                    </Link>
-                  ) : (
-                    post.userId?.name || post.userId?.username || 'Unknown'
-                  )}
+                  <span className="post-detail-author-copy">
+                    {hasSocietyContext ? (
+                      <Link to={`/societies/${societySlug || post.societyId?._id}`} className="profile-link-inline">
+                        {societyName}
+                      </Link>
+                    ) : post.userId?._id ? (
+                      <Link to={`/profile/${post.userId._id}`} className="profile-link-inline">
+                        {authorName}
+                      </Link>
+                    ) : (
+                      authorName
+                    )}
+                    {hasSocietyContext && (
+                      <span className="post-detail-author-subtitle">
+                        by {post.userId?._id ? (
+                          <Link to={`/profile/${post.userId._id}`} className="profile-link-inline">
+                            {authorName}
+                          </Link>
+                        ) : (
+                          authorName
+                        )}
+                      </span>
+                    )}
+                  </span>
                 </span>
               </span>
               <span>

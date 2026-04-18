@@ -152,7 +152,7 @@ router.put('/:id/avatar', auth, (req, res) => {
               avatar: uploadResult.secure_url,
               avatarPublicId: uploadResult.public_id
             },
-            { new: true }
+            { returnDocument: 'after' }
           ).select('-password')
 
           if (!updatedUser) {
@@ -195,7 +195,7 @@ router.put('/:id', auth, async (req, res) => {
     const user = await User.findByIdAndUpdate(
       req.params.id,
       { name, bio },
-      { new: true }
+      { returnDocument: 'after' }
     ).select('-password')
     console.log('Updated user:', user)
     res.json(user)
@@ -221,8 +221,8 @@ router.put('/:id/follow', auth, async (req, res) => {
     if (userToFollow.followers.includes(req.user.userId))
       return res.status(400).json({ error: 'Already following' })
 
-    await userToFollow.updateOne({ $push: { followers: req.user.userId } })
-    await currentUser.updateOne({ $push: { following: req.params.id } })
+    await userToFollow.updateOne({ $addToSet: { followers: req.user.userId } })
+    await currentUser.updateOne({ $addToSet: { following: req.params.id } })
 
     res.json({ message: 'Followed successfully' })
   } catch (err) {

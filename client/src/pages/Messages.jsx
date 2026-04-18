@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import api from '../api/index'
 import { useAuth } from '../context/useAuth'
 import Avatar from '../components/Avatar'
+import { formatDateTime } from '../utils/formatters'
 import './Feed.css'
 import './Profile.css'
 
@@ -77,10 +78,10 @@ const Messages = () => {
       setSending(true)
       setError('')
 
-       await api.post('/messages', {
-      conversationId: conversation._id,
-      content: content.trim()
-    })
+      await api.post('/messages', {
+        conversationId: conversation._id,
+        content: content.trim()
+      })
 
       setContent('')
     } catch (err) {
@@ -97,6 +98,7 @@ const Messages = () => {
           <div className="feed-nav-left">
             <span className="feed-logo">StudentNet</span>
             <Link to="/feed" className="nav-link">Feed</Link>
+            <Link to="/societies" className="nav-link">Societies</Link>
             <Link to="/explore" className="nav-link">Search</Link>
           </div>
         </nav>
@@ -113,7 +115,9 @@ const Messages = () => {
         <div className="feed-nav-left">
           <span className="feed-logo">StudentNet</span>
           <Link to="/feed" className="nav-link">Feed</Link>
+          <Link to="/societies" className="nav-link">Societies</Link>
           <Link to="/explore" className="nav-link">Search</Link>
+          <Link to="/settings" className="nav-link">Settings</Link>
         </div>
         <div className="feed-nav-right">
           <button onClick={() => navigate(-1)} className="nav-btn">Back</button>
@@ -158,6 +162,9 @@ const Messages = () => {
                         {isMine ? 'You' : message.senderId?.name || message.senderId?.username || 'User'}
                       </div>
                       <div>{message.content}</div>
+                      <div style={{ fontSize: '0.76rem', opacity: 0.72, marginTop: '0.45rem' }}>
+                        {formatDateTime(message.createdAt)}
+                      </div>
                     </div>
                   )
                 })

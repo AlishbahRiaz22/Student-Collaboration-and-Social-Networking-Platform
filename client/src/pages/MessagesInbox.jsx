@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import api from '../api/index'
 import { useAuth } from '../context/useAuth'
 import Avatar from '../components/Avatar'
+import { formatDateTime } from '../utils/formatters'
 import './Feed.css'
 import './Profile.css'
 
@@ -152,6 +153,7 @@ const MessagesInbox = () => {
           <Link to="/feed" className="nav-link">Feed</Link>
           <Link to="/explore" className="nav-link">Search</Link>
           <Link to="/messages" className="nav-link">Messages</Link>
+          <Link to="/settings" className="nav-link">Settings</Link>
         </div>
       </nav>
 
@@ -192,13 +194,16 @@ const MessagesInbox = () => {
                       size={42}
                     />
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 600 }}>
+                        <div style={{ fontWeight: 600 }}>
                         {otherParticipant?.name || otherParticipant?.username || 'Conversation'}
                       </div>
-                      <div style={{ fontSize: '0.88rem', color: '#666' }}>
-                        {conversation.latestMessage?.content || 'No messages yet'}
-                      </div>
+                        <div style={{ fontSize: '0.88rem', color: '#666' }}>
+                          {conversation.latestMessage?.content || 'No messages yet'}
+                        </div>
                     </div>
+                      <div style={{ fontSize: '0.78rem', color: '#888', whiteSpace: 'nowrap' }}>
+                        {formatDateTime(conversation.latestMessage?.createdAt || conversation.updatedAt || conversation.createdAt)}
+                      </div>
                   </button>
                 )
               })}

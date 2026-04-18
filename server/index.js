@@ -21,6 +21,7 @@ const userRoutes = require('./routes/users')
 app.use('/api/users', userRoutes)
 // app.use('/api/users', require('./routes/users'));
 app.use('/api/posts', require('./routes/posts'));
+app.use('/api/societies', require('./routes/societies'));
 app.use('/api/conversations', require('./routes/conversations'));
 app.use('/api/messages', require('./routes/messages'));
 // routes (put this BEFORE 404)
