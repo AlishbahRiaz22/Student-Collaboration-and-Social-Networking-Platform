@@ -7,10 +7,65 @@ import { formatDateTime } from '../utils/formatters'
 import './Feed.css'
 import './Profile.css'
 
+const s = {
+  nav: {
+    position: 'fixed', top: 0, left: 0, right: 0, height: 60,
+    background: '#d4e6a5', borderBottom: '2.5px solid #b5cc7a',
+    display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+    padding: '0 36px', zIndex: 100,
+  },
+  navLeft: { display: 'flex', alignItems: 'center', gap: 4 },
+  navRight: { display: 'flex', alignItems: 'center', gap: 8 },
+  logo: {
+    fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 900,
+    fontSize: '1.35rem', color: '#1a4a1a', textDecoration: 'none', marginRight: 14,
+  },
+  navA: {
+    textDecoration: 'none', fontWeight: 700, fontSize: '0.92rem',
+    color: '#1a4a1a', padding: '6px 14px', fontFamily: "'Nunito', sans-serif",
+  },
+  btnOutline: {
+    fontWeight: 700, fontSize: '0.88rem', color: '#1a4a1a', padding: '7px 18px',
+    border: '2px solid #1a4a1a', borderRadius: 999, background: 'none',
+    cursor: 'pointer', fontFamily: "'Nunito', sans-serif",
+  },
+  btnFill: {
+    fontWeight: 700, fontSize: '0.88rem', color: '#fff', padding: '8px 20px',
+    background: '#1a4a1a', border: 'none', borderRadius: 999,
+    cursor: 'pointer', fontFamily: "'Nunito', sans-serif",
+  },
+}
+const Key = ({ letter, color, style }) => (
+  <div
+    style={{
+      position: 'absolute',
+      width: 60,
+      height: 60,
+      borderRadius: 14,
+      background: color,
+      border: '3px solid #111',
+      boxShadow: '3px 3px 0 #111',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      fontFamily: "'Playfair Display', Georgia, serif",
+      fontWeight: 900,
+      fontSize: '1.7rem',
+      color: '#111',
+      userSelect: 'none',
+      pointerEvents: 'none',
+      animation: 'floatKey 3s ease-in-out infinite',
+      ...style,
+    }}
+  >
+    {letter}
+  </div>
+)
+
 const Messages = () => {
   const { userId } = useParams()
   const navigate = useNavigate()
-  const { user, socket } = useAuth()
+  const { user, socket, logout } = useAuth()
   const [profile, setProfile] = useState(null)
   const [conversation, setConversation] = useState(null)
   const [messages, setMessages] = useState([])
@@ -91,15 +146,31 @@ const Messages = () => {
     }
   }
 
+  const handleLogout = () => {
+    logout()
+    navigate('/login', { replace: true })
+  }
+
   if (loading) {
     return (
       <div className="feed-page">
-        <nav className="feed-nav">
-          <div className="feed-nav-left">
-            <span className="feed-logo">StudentNet</span>
-            <Link to="/feed" className="nav-link">Feed</Link>
-            <Link to="/societies" className="nav-link">Societies</Link>
-            <Link to="/explore" className="nav-link">Search</Link>
+        <nav style={s.nav}>
+          <div style={s.navLeft}>
+            <Link to="/" style={s.logo}>★ UNIVERSE</Link>
+            <Link to="/Feed"        style={s.navA}>Feed</Link>
+            <Link to="/create-post" style={s.navA}>Create Post</Link>
+            <Link to="/societies"   style={s.navA}>Societies</Link>
+            <Link to="/explore"     style={s.navA}>Explore</Link>
+            <Link to="/messages"    style={s.navA}>Messages</Link>
+            <Link to="/settings"    style={s.navA}>Settings</Link>
+            <Link to="/about"       style={s.navA}>About</Link>
+            <Link to="/contact"     style={s.navA}>Contact</Link>
+          </div>
+          <div style={s.navRight}>
+            <button onClick={() => navigate(`/profile/${currentUserId}`)} disabled={!currentUserId} style={s.btnOutline}>
+              Profile
+            </button>
+            <button onClick={handleLogout} style={s.btnFill}>Logout</button>
           </div>
         </nav>
         <div className="feed-container">
@@ -111,29 +182,54 @@ const Messages = () => {
 
   return (
     <div className="feed-page">
-      <nav className="feed-nav">
-        <div className="feed-nav-left">
-          <span className="feed-logo">StudentNet</span>
-          <Link to="/feed" className="nav-link">Feed</Link>
-          <Link to="/societies" className="nav-link">Societies</Link>
-          <Link to="/explore" className="nav-link">Search</Link>
-          <Link to="/settings" className="nav-link">Settings</Link>
+      <nav style={s.nav}>
+        <div style={s.navLeft}>
+          <Link to="/" style={s.logo}>★ UNIVERSE</Link>
+          <Link to="/Feed"        style={s.navA}>Feed</Link>
+          <Link to="/create-post" style={s.navA}>Create Post</Link>
+          <Link to="/societies"   style={s.navA}>Societies</Link>
+          <Link to="/explore"     style={s.navA}>Explore</Link>
+          <Link to="/messages"    style={s.navA}>Messages</Link>
+          <Link to="/settings"    style={s.navA}>Settings</Link>
+          <Link to="/about"       style={s.navA}>About</Link>
+          <Link to="/contact"     style={s.navA}>Contact</Link>
         </div>
-        <div className="feed-nav-right">
-          <button onClick={() => navigate(-1)} className="nav-btn">Back</button>
+        <div style={s.navRight}>
+          <button onClick={() => navigate(-1)} style={s.btnOutline}>Back</button>
+          <button onClick={() => navigate(`/profile/${currentUserId}`)} disabled={!currentUserId} style={s.btnOutline}>
+            Profile
+          </button>
+          <button onClick={handleLogout} style={s.btnFill}>Logout</button>
         </div>
       </nav>
 
-      <div className="feed-container">
+      <div className="feed-container messages-shell">
+        <style>{`
+          @keyframes floatKey {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-7px); }
+          }
+        `}</style>
+        <div className="messages-floating" aria-hidden="true">
+          <Key letter="C" color="#f4845f" style={{ left: '-18px', top: '40%' }} />
+          <Key letter="H" color="#f6c94e" style={{ left: '-10px', top: '60%' }} />
+          <Key letter="A" color="#5b9af5" style={{ right: '-10px', top: '40%' }} />
+          <Key letter="T" color="#49c4a0" style={{ right: '-18px', top: '60%' }} />
+        </div>
+
         {!profile ? (
           <div className="feed-status feed-error">{error || 'User not found'}</div>
         ) : (
-          <div className="profile-card">
-            <div className="profile-avatar-block">
+          <div className="messages-card">
+            <p className="messages-kicker">Campus conversations</p>
+            <h2 className="messages-title">Messages</h2>
+            <p className="messages-sub">Chatting with {profile.name || profile.username}.</p>
+
+            <div className="profile-avatar-block" style={{ marginBottom: '0.75rem' }}>
               <Avatar src={profile.avatar} name={profile.name || profile.username} size={56} className="profile-avatar" />
               <div>
-                <h2 className="profile-title" style={{ marginBottom: '0.2rem' }}>Message {profile.name || profile.username}</h2>
-                <p className="profile-login-hint" style={{ margin: 0 }}>Conversation started with @{profile.username}</p>
+                <h3 className="profile-title" style={{ marginBottom: '0.2rem' }}>{profile.name || profile.username}</h3>
+                <p className="profile-login-hint" style={{ margin: 0 }}>@{profile.username}</p>
               </div>
             </div>
 
@@ -153,9 +249,9 @@ const Messages = () => {
                         maxWidth: '80%',
                         padding: '0.75rem 0.9rem',
                         borderRadius: '14px',
-                        background: isMine ? '#378add' : '#f3f5f7',
-                        color: isMine ? '#fff' : '#222',
-                        border: isMine ? 'none' : '1px solid #e2e6ea'
+                        background: isMine ? '#1a4a1a' : '#f0f7f0',
+                        color: isMine ? '#fff' : '#1a4a1a',
+                        border: isMine ? 'none' : '1px solid #dce8c0'
                       }}
                     >
                       <div style={{ fontSize: '0.84rem', opacity: 0.8, marginBottom: '0.35rem' }}>

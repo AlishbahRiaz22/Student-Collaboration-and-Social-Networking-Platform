@@ -241,6 +241,7 @@ const CreatePostPage = () => {
           <div style={s.navLeft}>
             <Link to="/"            style={s.logo}>★ UNIVERSE</Link>
             <Link to="/feed"        style={s.navA}>Feed</Link>
+            <Link to="/"            style={s.navA}>Create Post</Link>
             <Link to="/societies"   style={s.navA}>Societies</Link>
             <Link to="/explore"     style={s.navA}>Explore</Link>
             <Link to="/messages"    style={s.navA}>Messages</Link>

@@ -195,13 +195,15 @@ const Explore = () => {
         <nav style={s.nav} className="ex-nav">
           <div style={s.navLeft}>
             <Link to="/" style={s.logo}>★ UNIVERSE</Link>
-            <Link to="/feed"      style={s.navA} className="ex-navA">Feed</Link>
-            <Link to="/societies" style={s.navA} className="ex-navA">Societies</Link>
-            <Link to="/explore"   style={s.navA} className="ex-navA">Explore</Link>
-            <Link to="/messages"  style={s.navA} className="ex-navA">Messages</Link>
-            <Link to="/settings"  style={s.navA} className="ex-navA">Settings</Link>
-			<Link to="/about" style={s.navA} className="ex-navA">About</Link>
-			<Link to="/contact" style={s.navA} className="ex-navA">Contact</Link>
+            <Link to="/Feed"        style={s.navA} className="ex-navA">Feed</Link>
+            <Link to="/create-post" style={s.navA} className="ex-navA">Create Post</Link>
+            <Link to="/societies"   style={s.navA} className="ex-navA">Societies</Link>
+            <Link to="/explore"     style={s.navA} className="ex-navA">Explore</Link>
+            <Link to="/messages"    style={s.navA} className="ex-navA">Messages</Link>
+            <Link to="/settings"    style={s.navA} className="ex-navA">Settings</Link>
+            <Link to="/about"       style={s.navA} className="ex-navA">About</Link>
+            <Link to="/contact"     style={s.navA} className="ex-navA">Contact</Link>
+			
           </div>
           <div style={s.navRight}>
             <button

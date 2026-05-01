@@ -7,7 +7,13 @@ import Avatar from '../components/Avatar'
 import PostCard from '../components/PostCard'
 import './Feed.css'
 import './Profile.css'
-
+const s= {
+  logo: {
+      fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 900,
+      fontSize: '1.35rem', color: '#1a4a1a', display: 'flex',
+      alignItems: 'center', gap: 8, textDecoration: 'none', marginRight: 14,
+    }
+}
 const Profile = () => {
   const navigate = useNavigate()
   const { id, username } = useParams()
@@ -273,9 +279,9 @@ const Profile = () => {
       <div className="feed-page">
       <nav className="feed-nav">
         <div className="feed-nav-left">
-          <span className="feed-logo">StudentNet</span>
-          <Link to="/create-post" className="nav-link">Create Post</Link>
-          <Link to="/feed" className="nav-link">Feed</Link>
+          <Link to="/" style={s.logo}>★ UNIVERSE</Link>
+            <Link to="/Feed" className="nav-link">Feed</Link>
+            <Link to="/create-post" className="nav-link">Create Post</Link>
           <Link to="/societies" className="nav-link">Societies</Link>
           <Link to="/explore" className="nav-link">Search</Link>
           <Link to="/messages" className="nav-link">Messages</Link>

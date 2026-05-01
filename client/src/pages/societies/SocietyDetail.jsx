@@ -394,8 +394,9 @@ const SocietyDetail = () => {
         <nav style={s.nav}>
           <div style={s.navLeft}>
             <Link to="/" style={s.logo}>★ UNIVERSE</Link>
-            <Link to="/feed"       style={s.navA} className="sd-navA">Feed</Link>
-            <Link to="/societies"  style={s.navA} className="sd-navA">Societies</Link>
+            <Link to="/feed"        style={s.navA} className="sd-navA">Feed</Link>
+            <Link to="/create-post" style={s.navA} className="sd-navA">Create Post</Link>
+            <Link to="/societies"   style={s.navA} className="sd-navA">Societies</Link>
             <Link to="/explore"    style={s.navA} className="sd-navA">Explore</Link>
             <Link to="/messages"   style={s.navA} className="sd-navA">Messages</Link>
             <Link to="/settings"   style={s.navA} className="sd-navA">Settings</Link>

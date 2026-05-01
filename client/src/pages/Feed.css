@@ -103,6 +103,66 @@
   padding: 80px 1rem 2rem;
 }
 
+.messages-shell {
+  position: relative;
+  max-width: 980px;
+  padding-left: 96px;
+  padding-right: 96px;
+}
+
+.messages-floating {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.messages-card {
+  background: #f9faf4;
+  border: 2.5px solid #1a4a1a;
+  border-top: 7px solid #1a4a1a;
+  border-radius: 22px;
+  box-shadow: 0 6px 28px rgba(0,0,0,0.10);
+  padding: 22px 22px 18px;
+  position: relative;
+  z-index: 2;
+}
+
+.messages-kicker {
+  margin: 0 0 6px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #6a8f4a;
+}
+
+.messages-title {
+  margin: 0 0 6px;
+  font-family: 'Playfair Display', Georgia, serif;
+  font-weight: 900;
+  font-size: 1.65rem;
+  color: #1a4a1a;
+}
+
+.messages-sub {
+  margin: 0 0 16px;
+  font-size: 0.95rem;
+  color: #5a7a3a;
+  font-weight: 600;
+}
+
+@media (max-width: 900px) {
+  .messages-shell {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .messages-floating {
+    display: none;
+  }
+}
+
 /* ── Suggestions strip ── */
 .suggestions-strip-card {
   background: #f9faf4;

@@ -184,6 +184,7 @@ const Feed = () => {
         <nav style={s.nav}>
           <div style={s.navLeft}>
             <Link to="/" style={s.logo}>★ UNIVERSE</Link>
+            <Link to="/Feed" style={s.navA}>Feed</Link>
             <Link to="/create-post" style={s.navA}>Create Post</Link>
             <Link to="/societies"   style={s.navA}>Societies</Link>
             <Link to="/explore"     style={s.navA}>Explore</Link>

@@ -196,6 +196,7 @@ const SocietiesHome = () => {
           <div style={s.navLeft}>
             <Link to="/" style={s.logo}>★ UNIVERSE</Link>
             <Link to="/feed"        style={s.navA} className="soc-nava">Feed</Link>
+            <Link to="/create-post" style={s.navA} className="soc-nava">Create Post</Link>
             <Link to="/societies"   style={s.navA} className="soc-nava">Societies</Link>
             <Link to="/explore"     style={s.navA} className="soc-nava">Explore</Link>
             <Link to="/messages"    style={s.navA} className="soc-nava">Messages</Link>
