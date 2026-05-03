@@ -3,7 +3,6 @@ services:
   - type: web
     name: scsn-backend
     env: node
-    plan: free
     rootDir: server
     buildCommand: npm install
     startCommand: node index.js
@@ -27,7 +26,6 @@ services:
   - type: web
     name: scsn-frontend
     env: static
-    plan: free
     rootDir: client
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
