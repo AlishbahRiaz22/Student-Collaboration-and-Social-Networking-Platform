@@ -133,12 +133,13 @@ const CreatePostPage = () => {
     },
     heroSub: { color: '#5a7a3a', fontSize: '0.95rem', fontWeight: 600, maxWidth: '62ch' },
 
-    layout: { display: 'grid', gridTemplateColumns: '1.1fr 0.9fr', gap: 20, alignItems: 'start' },
+    layout: { display: 'grid', gridTemplateColumns: 'minmax(0, 1.1fr) minmax(0, 0.9fr)', gap: 20, alignItems: 'start' },
 
     card: {
       background: '#f9faf4', borderRadius: 22, border: '2.5px solid #1a4a1a',
       borderTop: '7px solid #43a047', boxShadow: '0 6px 28px rgba(0,0,0,0.10)',
       padding: '24px 24px 20px',
+      minWidth: 0,
     },
     sectionTitle: {
       fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 900,
@@ -150,6 +151,7 @@ const CreatePostPage = () => {
       border: '2px solid #43a047', borderRadius: 14, padding: '12px 14px',
       fontFamily: "'Nunito', sans-serif", fontSize: '0.93rem', color: '#1a1a1a',
       background: '#f0f7f0', outline: 'none', lineHeight: 1.6,
+      overflowWrap: 'anywhere', wordBreak: 'break-word', whiteSpace: 'pre-wrap', overflowX: 'hidden',
     },
     uploadSection: { marginTop: 18, paddingTop: 16, borderTop: '1.5px solid #dce8c0' },
     uploadRow: { display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 14 },
@@ -200,6 +202,7 @@ const CreatePostPage = () => {
       boxShadow: '0 6px 28px rgba(0,0,0,0.10)',
       padding: '24px 24px 20px',
       position: 'sticky', top: 80,
+      minWidth: 0,
     },
     previewImgWrap: {
       borderRadius: 14, overflow: 'hidden', border: '2px solid #b5cc7a',
@@ -209,7 +212,16 @@ const CreatePostPage = () => {
       fontFamily: "'Playfair Display', Georgia, serif", fontWeight: 900,
       fontSize: '1rem', color: '#1a4a1a', marginBottom: 6,
     },
-    previewText: { color: '#4a4a4a', lineHeight: 1.6, fontSize: '0.9rem', fontWeight: 600 },
+    previewText: {
+      color: '#4a4a4a',
+      lineHeight: 1.6,
+      fontSize: '0.9rem',
+      fontWeight: 600,
+      overflowWrap: 'anywhere',
+      wordBreak: 'break-word',
+      whiteSpace: 'pre-wrap',
+      minWidth: 0,
+    },
     previewNote: {
       marginTop: 14, padding: '10px 12px', borderRadius: 12,
       background: '#e8f5e0', color: '#4a6a2a', fontSize: '0.82rem',
