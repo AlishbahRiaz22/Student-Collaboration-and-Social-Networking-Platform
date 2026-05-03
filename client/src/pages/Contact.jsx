@@ -32,10 +32,13 @@ const Contact = () => {
 
         <Navbar links={isLoggedIn ? [
           { to: '/feed', label: 'Feed' },
+          { to: '/create-post', label: 'Create Post' },
+          { to: '/societies', label: 'Societies' },
           { to: '/explore', label: 'Explore' },
           { to: '/messages', label: 'Messages' },
           { to: '/settings', label: 'Settings' },
           { to: '/about', label: 'About' },
+          { to: '/contact', label: 'Contact' },
         ] : [
            { to: '/', label: 'Home', end: true },
            { to: '/contact', label: 'Contact' },
